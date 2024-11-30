@@ -1,0 +1,47 @@
+{% extends "network/layout.html" %}
+
+{% block body %}
+
+<!-- Login Container -->
+<div class="container mt-5">
+    <!-- Card for the login form -->
+    <div class="card shadow-lg border-0 rounded-4">
+        <div class="card-body">
+
+            <!-- Heading -->
+            <h2 class="text-center mb-4 text-lightM">Login</h2>
+
+            <!-- Display message if there is any -->
+            {% if message %}
+            <div class="alert alert-danger text-center">{{ message }}</div>
+            {% endif %}
+
+            <!-- Login Form -->
+            <form action="{% url 'login' %}" method="post">
+                {% csrf_token %}
+
+                <!-- Username -->
+                <div class="mb-3">
+                    <input class="form-control form-control-lg bg-dark text-light" autofocus type="text" name="username" placeholder="Username" required>
+                </div>
+
+                <!-- Password -->
+                <div class="mb-3">
+                    <input class="form-control form-control-lg bg-dark text-light" type="password" name="password" placeholder="Password" required>
+                </div>
+
+                <!-- Login Button -->
+                <div class="d-flex justify-content-center">
+                    <input class="btn btn-dark btn-lg px-5" type="submit" value="Login">
+                </div>
+
+            </form>
+
+            <!-- Redirect to Register page -->
+            <p class="mt-3 text-center">Don't have an account? <a href="{% url 'register' %}" class=" text-light">Register here.</a></p>
+
+        </div>
+    </div>
+</div>
+
+{% endblock %}

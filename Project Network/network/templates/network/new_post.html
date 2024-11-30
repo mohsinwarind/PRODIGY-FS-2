@@ -1,0 +1,123 @@
+{% extends "network/layout.html" %}
+{% block title %}New Post{% endblock title %}
+
+{% block body %}
+<div class="container mt-5">
+    <!-- Card for New Post Section -->
+    <div class="card shadow-lg border-0 rounded-4">
+        <div class="card-body">
+            <h2 class="text-center mb-4 text-light">Create a New Post</h2>
+            
+            <!-- Form for creating a new post -->
+            <form action="{% url 'new-post' %}" method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                
+                <!-- Textarea for post content -->
+                <div class="mb-4">
+                    <textarea class="form-control border-0 shadow-sm bg-dark text-light" name="content" rows="6" placeholder="What's on your mind?" required style="resize: none;"></textarea>
+                </div>
+                
+                <!-- Dropdown for choosing image upload method -->
+                <div class="mb-4">
+                    <label for="image-option" class="form-label text-muted">Select Image Upload Option</label>
+                    <select class="form-select shadow-sm bg-dark text-light" id="image-option">
+                        <option value="none" selected class="bg-dark text-light">No Image</option>
+                        <option value="local" class="bg-dark text-light">Upload from Local</option>
+                        <option value="url" class="bg-dark text-light">Insert Image URL</option>
+                    </select>
+                </div>
+                
+                <!-- File Upload (hidden by default) -->
+                <div id="local-upload" class="mb-4" style="display: none;">
+                    <label for="image" class="form-label bg-dark text-light" >Upload an Image</label>
+                    <input type="file" class="form-control shadow-sm bg-dark text-light" id="image" name="image" accept="image/*">
+                    
+                    <!-- Preview for local upload -->
+                    <div id="image-preview-container" class="mt-3" style="display: none;">
+                        <img id="image-preview" src="" alt="Preview" class="img-fluid rounded shadow-sm" style="max-width: 100%; height: auto;">
+                    </div>
+                </div>
+
+                <!-- URL Input (hidden by default) -->
+                <div id="url-upload" class="mb-4" style="display: none;">
+                    <label for="image-url" class="form-label ">Insert Image URL</label>
+                    <input type="url" class="form-control shadow-sm bg-dark text-light" id="image-url" name="image_url" placeholder="https://example.com/image.jpg">
+                    
+                    <!-- Preview for URL -->
+                    <div id="url-preview-container" class="mt-3" style="display: none;">
+                        <img id="url-preview" src="" alt="Preview" class="img-fluid rounded shadow-sm" style="max-width: 100%; height: auto;">
+                    </div>
+                </div>
+                
+                <!-- Post button -->
+                <div class="d-flex justify-content-between align-items-center">
+                    <small id="charCount" class="text-muted">0 Characters</small>
+                    <input type="submit" class="btn btn-dark px-4 py-2" value="Post">
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Script for handling upload options -->
+<script>
+    const dropdown = document.getElementById('image-option');
+    const localUpload = document.getElementById('local-upload');
+    const urlUpload = document.getElementById('url-upload');
+    const fileInput = document.getElementById('image');
+    const urlInput = document.getElementById('image-url');
+    const imagePreviewContainer = document.getElementById('image-preview-container');
+    const urlPreviewContainer = document.getElementById('url-preview-container');
+    const imagePreview = document.getElementById('image-preview');
+    const urlPreview = document.getElementById('url-preview');
+
+    // Dropdown change event
+    dropdown.addEventListener('change', function () {
+        const value = this.value;
+        if (value === 'local') {
+            localUpload.style.display = 'block';
+            urlUpload.style.display = 'none';
+        } else if (value === 'url') {
+            localUpload.style.display = 'none';
+            urlUpload.style.display = 'block';
+        } else {
+            localUpload.style.display = 'none';
+            urlUpload.style.display = 'none';
+        }
+    });
+
+    // Local upload preview
+    fileInput.addEventListener('change', function () {
+        const file = this.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                imagePreview.src = e.target.result;
+                imagePreviewContainer.style.display = 'block';
+            };
+            reader.readAsDataURL(file);
+        } else {
+            imagePreviewContainer.style.display = 'none';
+        }
+    });
+
+    // URL preview
+    urlInput.addEventListener('input', function () {
+        const url = this.value;
+        if (url) {
+            urlPreview.src = url;
+            urlPreviewContainer.style.display = 'block';
+        } else {
+            urlPreviewContainer.style.display = 'none';
+        }
+    });
+
+    // Character count for textarea
+    const textarea = document.querySelector('textarea[name="content"]');
+    const charCount = document.getElementById('charCount');
+    textarea.addEventListener('input', () => {
+        charCount.textContent = `${textarea.value.length} Characters`;
+    });
+</script>
+
+{% endblock body %}

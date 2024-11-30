@@ -1,0 +1,57 @@
+{% extends "network/layout.html" %}
+{% block title %}Post Detail{% endblock title %}
+{% block body %}
+    
+<div class="container mt-5">
+    <!-- Post Card -->
+    <div class="card shadow-sm border-0 rounded-3 mb-4">
+        <div class="card-body">
+            <h5 class="card-title text-light">{{ post.user.username }}</h5>
+            <p class="card-text text-muted mb-2"><small>Posted on {{ post.timestamp }}</small></p>
+            
+            {% if post.image %}
+            <div class="mb-3">
+                <img src="{{ post.image.url }}" alt="Post Image" class="img-fluid rounded-lg shadow-sm" />
+            </div>
+            {% endif %}
+            
+            <p class="card-text" id="post-content-{{ post.id }}">{{ post.content }}</p>
+            
+            <div class="d-flex justify-content-between align-items-center mt-3">
+                <p class="text-muted mb-0"><small>Likes: {{ post.likes.count }}</small></p>
+                {% if user == post.user %}
+                    <!-- Edit Post Button (only for the post author) -->
+                    <button class="btn btn-warning btn-sm" onclick="editPost({{ post.id }})">Edit</button>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Comments Section -->
+    <div class="comments-section mt-4">
+        <h5 class="text-secondary mb-3">Comments</h5>
+        <div id="comments-container">
+            {% for comment in post.comments.all %}
+            <div class="comment mb-3 p-3 bg-light rounded-3 shadow-sm bg-dark text-light">
+                <strong class="text-light">{{ comment.user.username }}</strong>:
+                <p class="text-light">{{ comment.content }}</p>
+                <small class="text-muted">{{ comment.timestamp }}</small>
+            </div>
+            {% empty %}
+            <p class="text-muted">No comments yet. Be the first to comment!</p>
+            {% endfor %}
+        </div>
+
+        {% if user.is_authenticated and user != post.user %}
+        <!-- Comment Form -->
+        <form id="add-comment-form" onsubmit="submitComment(event, {{ post.id }})">
+            <div class="input-group">
+                <textarea id="comment-content" class="form-control bg-dark text-light" rows="2" placeholder="Add a comment..." required></textarea>
+                <button type="submit" class="btn btn-dark ml-2">Post</button>
+            </div>
+        </form>
+        {% endif %}
+    </div>
+</div>
+
+{% endblock body %}
